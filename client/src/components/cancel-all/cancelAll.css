@@ -1,0 +1,50 @@
+.cancel-all-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.cancel-all-container h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.cancel-all-container input[type='text'] {
+  width: 95%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.cancel-all-container button {
+  padding: 0.8rem 1.2rem;
+  background-color: #dc3545; /* red color for a cancel action */
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cancel-all-container button:hover {
+  background-color: #c82333;
+}
+
+.cancel-all-container .result-message {
+  margin-top: 1rem;
+  color: green;
+}
+
+.cancel-all-container .error-message {
+  margin-top: 1rem;
+  color: red;
+}

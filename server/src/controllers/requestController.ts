@@ -49,6 +49,11 @@ const completeRequestSchema = z.object({
 export const completeRequest = async (id: string, body: any) => {
   const parsedData = completeRequestSchema.parse(body);
 
+  const resolution =
+    parsedData.resolution?.trim().length === 0
+      ? 'Обращение обработано без дополнительных комментариев'
+      : parsedData.resolution;
+
   const existingRequest = await prisma.request.findUnique({ where: { id } });
 
   if (!existingRequest) {
@@ -62,7 +67,7 @@ export const completeRequest = async (id: string, body: any) => {
 
   const updatedRequest = await prisma.request.update({
     where: { id },
-    data: { status: 'COMPLETED', resolution: parsedData.resolution },
+    data: { status: 'COMPLETED', resolution },
   });
 
   return updatedRequest;
@@ -77,6 +82,10 @@ const cancelRequestSchema = z.object({
 
 export const cancelRequest = async (id: string, body: any) => {
   const parsedData = cancelRequestSchema.parse(body);
+  const cancelNote =
+    parsedData.cancelNote?.trim().length === 0
+      ? 'Обращение отменено без дополнительных комментариев'
+      : parsedData.cancelNote;
 
   const existingRequest = await prisma.request.findUnique({ where: { id } });
 
@@ -94,14 +103,14 @@ export const cancelRequest = async (id: string, body: any) => {
 
   const updatedRequest = await prisma.request.update({
     where: { id },
-    data: { status: 'CANCELED', cancelNote: parsedData.cancelNote },
+    data: { status: 'CANCELED', cancelNote },
   });
 
   return updatedRequest;
 };
 
 export const getRequests = async (query: any) => {
-  let whereConfig = {};
+  let whereConfig: any = {};
 
   if (query.date) {
     const date = new Date(query.date);
@@ -114,7 +123,12 @@ export const getRequests = async (query: any) => {
   } else if (query.startDate && query.endDate) {
     const startDate = new Date(query.startDate);
     const endDate = new Date(query.endDate);
+    endDate.setHours(23, 59, 59, 999);
     whereConfig = { createdAt: { gte: startDate, lte: endDate } };
+  }
+
+  if (query.status) {
+    whereConfig.status = query.status;
   }
 
   const requests = await prisma.request.findMany({ where: whereConfig });
@@ -131,10 +145,14 @@ const cancelAllRequestsSchema = z.object({
 
 export const cancelAllRequestsInProgress = async (body: any) => {
   const parsedData = cancelAllRequestsSchema.parse(body);
+  const cancelNote =
+    parsedData.cancelNote?.trim().length === 0
+      ? 'Обращение отменено без дополнительных комментариев'
+      : parsedData.cancelNote;
 
   const result = await prisma.request.updateMany({
     where: { status: 'IN_PROGRESS' },
-    data: { status: 'CANCELED', cancelNote: parsedData.cancelNote },
+    data: { status: 'CANCELED', cancelNote },
   });
 
   return result;
