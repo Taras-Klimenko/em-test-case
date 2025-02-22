@@ -17,7 +17,7 @@ const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
     setResponseMessage(null);
 
     try {
-      const response = await fetch('http://localhost:3000/requests', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, message }),

@@ -20,7 +20,7 @@ const RequestDetail: React.FC = () => {
 
   const fetchRequest = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/requests/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/requests/${id}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Ошибка при получении данных');
       setRequest(data);
@@ -38,9 +38,12 @@ const RequestDetail: React.FC = () => {
 
   const handleStart = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/requests/${id}/start`, {
-        method: 'PATCH',
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/requests/${id}/start`,
+        {
+          method: 'PATCH',
+        }
+      );
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.error || 'Ошибка при изменении статуса обращения');
@@ -52,11 +55,14 @@ const RequestDetail: React.FC = () => {
 
   const handleComplete = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/requests/${id}/complete`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resolution }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/requests/${id}/complete`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resolution }),
+        }
+      );
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.error || 'Ошибка при изменении статуса обращения');
@@ -69,11 +75,14 @@ const RequestDetail: React.FC = () => {
 
   const handleCancel = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/requests/${id}/cancel`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cancelNote }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/requests/${id}/cancel`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cancelNote }),
+        }
+      );
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.error || 'Ошибка при изменении статуса обращения');

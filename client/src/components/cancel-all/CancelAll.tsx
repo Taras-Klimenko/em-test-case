@@ -11,7 +11,7 @@ const CancelAll: React.FC = () => {
     setResultMsg(null);
     try {
       const res = await fetch(
-        'http://localhost:3000/requests/cancel-all-in-progress',
+        `${import.meta.env.VITE_API_URL}/requests/cancel-all-in-progress`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

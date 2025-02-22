@@ -18,7 +18,9 @@ const HomePage: React.FC = () => {
 
   const fetchRequests = async (queryParams: string = '') => {
     try {
-      const res = await fetch(`http://localhost:3000/requests${queryParams}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/requests${queryParams}`
+      );
       const data = await res.json();
       setRequests(
         data.sort(
