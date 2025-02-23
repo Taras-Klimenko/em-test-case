@@ -63,10 +63,9 @@ PORT=3000
 DATABASE_URL="postgresql://postgres_username:password@localhost:5432/database_name?schema=public"
 ```
 
-2.3 Настроить ORM и подключение к базе данных Postgres:
+2.3 Настроить ORM, подключение к базе данных Postgres и провести миграцию:
 
 ```bash
-npx prisma init
 npx prisma migrate dev --name init
 npx prisma generate
 ```
