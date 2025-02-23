@@ -1,0 +1,251 @@
+openapi: 3.0.0
+info:
+  title: API системы работы с обращениями
+  version: 1.0.0
+  description: API системы работы с обращениями - тестовое задание.
+servers:
+  - url: http://localhost:3000
+paths:
+  /requests:
+    get:
+      summary: Получить список обращений
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: получить все обращения за определенный день (ГГГГ-ММ-ДД)
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date
+          description: Получить все обращения в диапазоне дат - начальная дата
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date
+          description: Получить все обращения в диапазоне дат - конечная дата
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [NEW, IN_PROGRESS, COMPLETED, CANCELED]
+          description: Получить все обращения с выбранным статусом
+      responses:
+        '200':
+          description: Список обращений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Создать новое обращение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRequest'
+      responses:
+        '201':
+          description: Обращение создано успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /requests/{id}:
+    get:
+      summary: Получить обращение по идентификатору (ID)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные обращения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '404':
+          description: Запрашиваемый ресурс не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /requests/{id}/start:
+    patch:
+      summary: Взять обращение в работу (изменить статус с НОВОЕ на В РАБОТЕ)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Статус обращения изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /requests/{id}/complete:
+    patch:
+      summary: Завершить работу с обращением (изменить статус с В РАБОТЕ на ЗАВЕРШЕНО)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resolution:
+                  type: string
+                  description: Опциональный текст с описанием решением проблемы
+      responses:
+        '200':
+          description: Статус обращения изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /requests/{id}/cancel:
+    patch:
+      summary: Отменить обращение (изменить статус с В РАБОТЕ на ОТМЕНЕНО)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancelNote:
+                  type: string
+                  description: Опциональный текст с причиной отмены
+      responses:
+        '200':
+          description: Статус обращения изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /requests/cancel-all-in-progress:
+    post:
+      summary: Отменить все обращения со статусом В РАБОТЕ
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cancelNote:
+                  type: string
+                  description: Опциональный текст с причиной отмены
+      responses:
+        '200':
+          description: все обращения со статусом В РАБОТЕ переведены в статус ОТМЕНЕНО
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Request:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        topic:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [NEW, IN_PROGRESS, COMPLETED, CANCELED]
+        resolution:
+          type: string
+          nullable: true
+        cancelNote:
+          type: string
+          nullable: true
+    NewRequest:
+      type: object
+      required:
+        - topic
+        - message
+      properties:
+        topic:
+          type: string
+        message:
+          type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Описание ошибки
